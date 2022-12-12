@@ -1,0 +1,6 @@
+* {
+  box-sizing: border-box;
+}
+body {
+  background: linear-gradient(#21407e, #f19a9a);
+}
