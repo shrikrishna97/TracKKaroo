@@ -1,0 +1,741 @@
+      openapi: 3.0.0
+
+      info:
+        title: TracKKaroo
+        contact:
+          email: 21f1006966@student.onlinedegree.iitm.ac.in
+        version: 1.0.0
+      servers:
+        - url: http://127.0.0.1:5000/
+      paths:
+        /api/user:
+           post:
+            tags:
+              - User Api
+            summary: For Signup
+            description: To register user  
+            operationId: signup
+            requestBody:
+              content:
+                application/json:
+                  schema:
+                    type: object
+                    properties:
+                      username:
+                        type: string
+                        example: "Shri Krishna" 
+                      email:
+                        type: string
+                        example: shri@gmail.com
+                      password:
+                        type: string
+                        example: '123'
+            responses:
+              '200':
+                description: User Registered Succesfully
+                content:
+                  application/json:
+                    schema:
+                      type: object
+                      properties:
+                        username:
+                          type: string
+                        email:
+                          type: string
+              
+              '400':
+                description: "Error!!!: Paramater"
+                content:
+                  application/json:
+                    schema:
+                      type: object
+                      properties:
+                        message:
+                          properties:
+                           password:
+                            type: string
+                            example: "pass required"
+                           username:
+                            type: string
+                            example: "username required"
+                           email:
+                            type: string
+                            example: "email required"
+              '500':
+                 description: Internal Server Error
+           get:   
+            tags:
+              - User Api
+            summary: Get user details
+            description: To obtain user details, first retrieve the Authentication-token from the flask-security login endpoint.
+            operationId: userdetail
+            parameters:
+              - in: header
+                name: Authentication-Token
+                description: An authorization header
+                required: true
+                schema:
+                  type: string
+           
+            responses:
+              '200':
+                description: User Details
+                content:
+                  application/json:
+                    schema:
+                      type: object
+                      properties:
+                        username:
+                          type: string
+                        email:
+                          type: string
+              '400':
+                description: "Error!!!: No Authentication-Token,login to access this error"
+                content:
+                  application/json:
+                    schema:
+                      type: object
+                      properties:
+                        error:
+                          type: string
+                          example: "Please log in to access this page."
+              '500':
+                description: Internal Server Error         
+        /api/tracker/{email}:
+          post:
+            tags:
+              - Tracker Api
+            summary: Create new tracker
+            description: To create new tracker
+            operationId: newtracker
+            parameters:
+              - in: path
+                name: email
+                description: Enter Email
+                required: true
+                schema:
+                  type: string
+                  example: "ansh@gmail.com"
+              - in: header
+                name: Authentication-Token
+                description: An authorization header
+                required: true
+                schema:
+                  type: string
+                  
+              - in: query
+                name: "Tracker_name"
+                description: "Enter your tracker name"
+                required: true
+                schema:
+                  type: string
+                  example: "Coding"
+              - in: query
+                name: "Tracker_Description"
+                description: "Describe your tracker in few line."
+                required: true
+                schema:
+                  type: string
+                  example: 'I will try to see how many code I wrote'
+              - in: query
+                name: "Tracker_Type"
+                description: "Tracker can be of three type: Numeric or Multiple Choice or Boolean."
+                required: true
+                schema:
+                  type: string
+                  example: "Numeric"
+              - in: query
+                name: "Setting"
+                description: "Only Multiple Choice can have settings alloted."
+                required: true
+                schema:
+                  type: string
+                  example: "good,bad,poor"    
+            requestBody:
+              content:
+                application/json:
+                  schema:
+                    type: object
+                    properties:
+                      Tracker_name:
+                        type: string
+                        example: "Coding" 
+                      Tracker_Description:
+                        type: string
+                        example: Describe your tracker in few line.
+                      Tracker_Type:
+                        type: string
+                        example: 'Numeric'
+                      Setting:
+                        type: string
+                        example: "good,bad,poor"        
+            responses:
+              '200':
+                description: "Tracker Created."     
+              '400':
+                description: "Error!!!: No Authentication-Token,login to access this error, Tracker name, and Tracker type is required "
+                content:
+                  application/json:
+                    schema:
+                      type: object
+                      properties:
+                        error:
+                          type: string
+                          example: "Please log in to access this page."
+                        message:
+                          properties:
+                           Tracker_name:
+                            type: string
+                            example: "tracker name required"
+                           Tracker_Type:
+                            type: string
+                            example: "tracker type required"
+                           email:
+                            type: string
+                            example: "email required"  
+              '500':
+                description: Internal Server Error
+          get:
+            tags:
+              - Tracker Api
+            summary: It will give you all the tracker list,if you provide email and authentication token.
+            description: To get all tracker
+            operationId: alltracker
+            parameters:
+              - in: path
+                name: email
+                description: Enter Email
+                required: true
+                schema:
+                  type: string
+                  example: "ansh@gmail.com"
+              - in: header
+                name: Authentication-Token
+                description: An authorization header
+                required: true
+                schema:
+                  type: string    
+            responses:
+              '200':
+                description: "Dictionary of all Tracker sent."
+                content:
+                  application/json:
+                    schema:
+                      type: object
+                      properties:
+                        Tracker_name:
+                          type: string
+                          example: "Coding"
+                        Tracker_Description:
+                          type: string
+                          example: "I will try to see how many codes I wrote."
+                        Tracker_Type:
+                          type: string
+                          example: "Numeric"
+                        Setting:
+                          type: string
+                          example: ""         
+              '400':
+                description: "Error!!!: No Authentication-Token,login to access this error"
+                content:
+                  application/json:
+                    schema:
+                      type: object
+                      properties:
+                        Authentication-Token Error:
+                          type: string
+                          example: "Please log in to access this page."
+                        Email Error:  
+                          type: string
+                          example: "There are some wrong user details filled and asked for." 
+              '401':
+                description: "Wrong authentication token."
+                content:
+                  application/json:
+                    schema:
+                      type: object
+                      properties:
+                        response:
+                          type: object
+                          properties:
+                           errors:
+                            type: string
+                            example: "You are not authenticated. Please supply the correct credentials."                          
+              '500':
+                description: "Internal Server Error"        
+        /api/tracker/{email}/{id}:
+          put:
+            tags:
+              - Tracker Api
+            summary: For updating tracker details.
+            description: Updating tracker
+            operationId: update
+            parameters:
+              - in: path
+                name: email
+                description: Enter Email
+                required: true
+                schema:
+                  type: string
+                  example: 'shri@gmail.com'
+              - in: path
+                name: id
+                description: Tracker id for the user Tracker.
+                required: true
+                schema:
+                  type: integer
+                  example: 1
+              - in: header
+                name: Authentication-Token
+                description: An authorization header
+                required: true
+                schema:
+                  type: string
+              - in: query
+                name: "Tracker_name"
+                description: "Enter your tracker name"
+                required: true
+                schema:
+                  type: string
+                  example: "Coding"
+              - in: query
+                name: "Tracker_Description"
+                description: "Describe your tracker in few line."
+                required: true
+                schema:
+                  type: string
+                  example: 'I will try to see how many code I wrote'
+              - in: query
+                name: "Tracker_Type"
+                description: "Tracker can be of three type: Numeric or Multiple Choice or Boolean."
+                required: true
+                schema:
+                  type: string
+                  example: "Numeric"
+              - in: query
+                name: "Setting"
+                description: "Only Multiple Choice can have settings alloted."
+                required: true
+                schema:
+                  type: string
+                  example: "good,bad,poor"
+            requestBody:
+              content:
+                application/json:
+                  schema:
+                    type: object
+                    properties:
+                      Tracker_name:
+                        type: string
+                        example: "Coding" 
+                      Tracker_Description:
+                        type: string
+                        example: Describe your tracker in few line.
+                      Setting:
+                        type: string
+                        example: "good,bad,poor"    
+            responses:
+              '200':
+                description: "Tracker Updated."    
+              '400':
+                description: "Error!!!: No Authentication-Token,login to access this error, Tracker name, and Tracker type is required "
+                content:
+                  application/json:
+                    schema:
+                      type: object
+                      properties:
+                        error:
+                          type: string
+                          example: "tracker id is not valid"
+                        message:
+                          properties:
+                           Tracker_name:
+                            type: string
+                            example: "tracker name required"
+                           Tracker_Type:
+                            type: string
+                            example: "tracker type required"
+                           email:
+                            type: string
+                            example: "email required"
+              '500':
+                description: "Internal Server Error"
+          delete:
+            tags:
+              - Tracker Api
+            summary: "For delete tracker details with tracker id."
+            description: "Deleting a tracker"
+            operationId: "deleteTracker"
+            parameters: 
+              - in: path
+                name: email
+                description: Enter Email
+                required: true
+                schema:
+                  type: string
+                  example: 'shri@gmail.com'
+              - in: path
+                name: id
+                description: "Tracker id for the user Tracker."
+                required: true
+                schema:
+                  type: integer
+                  example: 1
+              - in: header
+                name: Authentication-Token
+                description: An authorization header
+                required: true
+                schema:
+                  type: string      
+            responses:
+              '200':
+                description: "Successfully Deleted."
+              '400':
+                description: "id does not exist."
+                content:
+                  application/json:
+                    schema:
+                      type: object
+                      properties:
+                        error:
+                          type: string
+                          example: "id does not exist."
+                        
+              '500':
+                description: "Internal Server Error"
+        /api/log/{type}/{id}:
+          post:
+            tags:
+              - Logger Api
+            summary: Add a new log to the tracker
+            description: 'Post log details in tracker created.'
+            operationId: addlog
+            parameters:
+              - in: path
+                name: type
+                description: 'Tracker type is needed for logging the details.'
+                required: true
+                schema:
+                  type: string
+              - in: path
+                name: id
+                description: 'Tracker id is required for correct user log.'
+                required: true
+                schema:
+                  type: integer
+              - in: header
+                name: Authentication-Token
+                description: An authorization header
+                required: true
+                schema:
+                  type: string  
+              - in: query
+                name: Value
+                description: "Value to be added here from selected tracker type.I am taking numeric for example."
+                required: true
+                schema:
+                  type: integer
+                  example: 45
+              - in: query
+                name: Note
+                description: 'Note can be given along with value'
+                required: false
+                schema:
+                  type: string
+                  example: "Today was great!"
+            requestBody:
+              content:
+                application/json:
+                  schema:
+                    type: object
+                    properties:
+                      Value:
+                        type: string
+                        example: "1" 
+                      Note:
+                        type: string
+                        example: Describe your log in few line.
+			    email:
+				type: string
+				example: shri@gmail.com					   
+            responses:
+              '200':
+                description: Log Added Successfully
+                content:
+                  application/json:
+                    schema:
+                      type: object
+                      properties:
+                          Numeric:
+                            type: string
+                            example: Numeric Log Added Successfully
+                          Multiple Choice:
+                            type: string
+                            example: Multiple Choice Log Added Successfully
+                          Boolean:
+                            type: string
+                            example: Boolean Log Added Successfully
+              '400':
+                description: "id does not exist."
+                content:
+                  application/json:
+                    schema:
+                      type: object
+                      properties:
+                        error:
+                          type: string
+                          example: "id does not exist."
+              '401':
+                description: "Token Expired"          
+              '500':
+                description: "Internal Server Error"
+          get:
+            tags:
+              - Logger Api
+            summary: Get list of log for the given tracker.
+            description: 'Get log details of tracker created.'
+            operationId: getlog
+            parameters:
+              - in: path
+                name: type
+                description: 'Tracker type is needed for logging the details.'
+                required: true
+                schema:
+                  type: string
+              - in: path
+                name: id
+                description: 'Tracker id is required for correct user log.'
+                required: true
+                schema:
+                  type: integer
+              - in: header
+                name: Authentication-Token
+                description: An authorization header
+                required: true
+                schema:
+                  type: string
+            responses:
+              '200':
+                description: "Dictionary of all log of given tracker sent."
+                content:
+                  application/json:
+                    schema:
+                      type: object
+                      properties:
+                        id:
+                          type: integer
+                          example: 1
+                        Value:
+                          type: string
+                          example: "4"
+                        Note:
+                          type: string
+                          example: "Had a good run today."
+                        date_created:
+                          type: string
+                          example: "Sun, 25 Sep 2022 21:20:57 GMT"
+                        base64:
+                          type: string
+                          example: ""
+              '400':
+                 description: "something went wrong"
+                 content:
+                   application/json:
+                     schema:
+                       type: object
+                       properties:
+                         error:
+                           type: string
+                           example: "Something Went SomeWhere. Out Type Don't Match"
+              '500':
+                description: "Internal Server Error"
+        /api/log/{tracker_id}/{log_id}:
+          put:
+            tags:
+              - Logger Api
+            summary: update log of the tracker
+            description: 'Post log details in tracker created.'
+            operationId: updatelog
+            parameters:
+              - in: path
+                name: tracker_id
+                description: 'Tracker id is needed for updating log details.'
+                required: true
+                schema:
+                  type: string
+              - in: path
+                name: log_id
+                description: 'log id is required for correct user log.'
+                required: true
+                schema:
+                  type: integer
+              - in: header
+                name: Authentication-Token
+                description: An authorization header
+                required: true
+                schema:
+                  type: string  
+              - in: query
+                name: Value
+                description: "Value to be added here from selected tracker type.I am taking numeric for example."
+                required: true
+                schema:
+                  type: integer
+                  example: 45
+              - in: query
+                name: Note
+                description: 'Note can be given along with value'
+                required: false
+                schema:
+                  type: string
+                  example: "Today was great!"    
+            requestBody:
+              content:
+                application/json:
+                  schema:
+                    type: object
+                    properties:
+                      Value:
+                        type: string
+                        example: "1" 
+                      Note:
+                        type: string
+                        example: Describe your log in few line.
+			    email:
+				type: string
+				example: shri@gmail.com	
+            responses:
+              '200':
+                description: Log Updated Successfully
+                content:
+                  application/json:
+                    schema:
+                      type: object
+                      properties:
+                          Numeric:
+                            type: string
+                            example: log numeric updated.
+                          Multiple Choice:
+                            type: string
+                            example: log multiple updated.
+                          Boolean:
+                            type: string
+                            example: log boolean updated.
+              '400':
+                description: "tracker/log id not valid"
+                content:
+                  application/json:
+                    schema:
+                      type: object
+                      properties:
+                        error:
+                          type: string
+                          example: "tracker/log id not valid."
+              '401':
+                description: "Token Expired"          
+              '500':
+                description: "Internal Server Error"
+          delete:
+            tags:
+              - Logger Api
+            summary: "For delete tracker details with tracker id."
+            description: "Deleting a tracker"
+            operationId: "deleteTracker"
+            parameters: 
+              - in: path
+                name: tracker_id
+                description: 'Tracker id is needed for deleting log details.'
+                required: true
+                schema:
+                  type: string
+              - in: path
+                name: log_id
+                description: 'log id is required for correct user log.'
+                required: true
+                schema:
+                  type: integer
+              - in: header
+                name: Authentication-Token
+                description: An authorization header
+                required: true
+                schema:
+                  type: string       
+            responses:
+              '200':
+                description: "Successfully Deleted."
+              '400':
+                description: "id does not exist."
+                content:
+                  application/json:
+                    schema:
+                      type: object
+                      properties:
+                        error:
+                          type: string
+                          example: "There was a problem deleting that task."
+              '500':
+                description: "Internal Server Error"         
+        /export/tracker/{email}:
+          get:
+            tags:
+              - Export
+            summary: Export All trackers
+            description: ''
+            operationId: Export Trackers
+            parameters:
+              - in: header
+                name: Authorization-Token
+                description: An Authorization header
+                required: true
+                schema:
+                  type: string
+              - in: path
+                name: email
+                description: ''
+                required: true
+                schema:
+                  type: string
+                  example: shri@gmail.com
+            responses:
+              '200':
+                description: Please Check your mail and Download the Csv File.
+              '401':
+                description: "Invalid Token or Token Missing"
+              '500':
+                description: "Internal server error." 
+        /api/csv/{email}/{tracker_id}:
+          get:
+            tags:
+              - Export
+            summary: Export All trackers
+            description: ''
+            operationId: Export logs
+            parameters:
+              - in: header
+                name: Authorization-Token
+                description: An Authorization header
+                required: true
+                schema:
+                  type: string
+              - in: path
+                name: email
+                description: ''
+                required: true
+                schema:
+                  type: string
+                  example: shri@gmail.com
+              - in: path
+                name: tracker_id
+                description: ''
+                required: true
+                schema:
+                  type: integer
+                  example: 1   
+            responses:
+              '200':
+                description: Please Check your mail and Download the Csv File.
+              '401':
+                description: "Invalid Token or Token Missing"
+              '500':
+                description: "Internal server error."
+   
